@@ -3,7 +3,7 @@
 // =================================================================
 // ⬇️⬇️⬇️ GANTI BAGIAN INI DENGAN firebaseConfig ANDA ⬇️⬇️⬇️
 const firebaseConfig = {
-  apiKey: "AIzaSy...YOUR...KEY...HERE..AIzaSyCeO7wuJuMcvLjv6geumpzmhUgEF09ytQs",
+  apiKey: "AIzaSyCeO7wuJuMcvLjv6geumpzmhUgEF09ytQs",
   authDomain: "proyek-penginapan.firebaseapp.com",
   projectId: "proyek-penginapan",
   storageBucket: "proyek-penginapan.firebasestorage.app",
