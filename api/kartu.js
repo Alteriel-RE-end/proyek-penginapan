@@ -29,13 +29,17 @@ export default async function handler(request, response) {
     // ==========================================================
     if (request.method === 'POST') {
         try {
-            const { uid } = request.body;
+            const { uid, namaTamu } = request.body; // <-- PERBAIKAN 1: Baca juga namaTamu
             if (!uid) {
                 return response.status(400).json({ message: 'UID kartu diperlukan' });
             }
+            
+            // Tentukan nama yang akan disimpan (default ke [ Kosong ] jika tidak ada)
+            const namaUntukDisimpan = namaTamu || '[ Kosong ]';
+
             // Buat dokumen baru dengan nama 'uid'
             await db.collection(COLLECTION_NAME).doc(uid).set({
-                namaTamu: '[ Kosong ]'
+                namaTamu: namaUntukDisimpan // <-- PERBAIKAN 2: Gunakan nama dari input
             });
             return response.status(201).json({ message: `Kartu ${uid} berhasil ditambahkan` });
         } catch (error) {
