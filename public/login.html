@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div id="login-form">
+            <h1>Login Admin</h1>
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button id="login-button">Login</button>
+            <p id="login-error" class="error-message"></p>
+            <p>Belum punya akun? <a href="#" id="show-register">Register di sini</a></p>
+        </div>
+
+        <div id="register-form" style="display:none;">
+            <h1>Register Akun Baru</h1>
+            <input type="email" id="register-email" placeholder="Email" required>
+            <input type="password" id="register-password" placeholder="Password (min. 6 karakter)" required>
+            <button id="register-button">Register</button>
+            <p id="register-message" class="info-message"></p>
+            <p>Sudah punya akun? <a href="#" id="show-login">Login di sini</a></p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>
