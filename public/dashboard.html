@@ -7,10 +7,57 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="container">
-    <div>
-        <h1>Selamat Datang di Dashboard Admin</h1>
-        <p>Anda berhasil login.</p>
-        <button id="logout-button">Logout</button>
+    <div class="dashboard-wrapper">
+        <header class="dashboard-header">
+            <h1>Admin Dashboard</h1>
+            <button id="logout-button">Logout</button>
+        </header>
+
+        <nav class="dashboard-nav">
+            <button id="nav-dashboard" class="nav-button active">Dashboard Utama</button>
+            <button id="nav-kartu" class="nav-button">Manajemen Kartu</button>
+            </nav>
+
+        <main id="dashboard-content">
+            <section id="content-dashboard">
+                <h2>Ringkasan Properti</h2>
+                <p>Bagian ini akan menampilkan grafik dan status detail (dalam pengembangan).</p>
+            </section>
+
+            <section id="content-kartu" style="display: none;">
+                <h2>Manajemen Kartu Tamu</h2>
+                <button id="tambah-kartu-baru-btn" class="button-add">Tambah Kartu Baru</button>
+                <table id="kartu-table">
+                    <thead>
+                        <tr>
+                            <th>UID Kartu</th>
+                            <th>Nama Tamu Saat Ini</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kartu-table-body">
+                        </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <div id="modal-backdrop" style="display: none;">
+        <div id="modal-container">
+            <h2 id="modal-title">Judul Modal</h2>
+            <form id="modal-form">
+                <input type="hidden" id="modal-uid-lama"> <label for="modal-uid">UID Kartu:</label>
+                <input type="text" id="modal-uid" placeholder="Scan atau ketik UID kartu" required>
+                
+                <label for="modal-nama">Nama Tamu:</label>
+                <input type="text" id="modal-nama" placeholder="Ketik nama tamu (atau '[ Kosong ]')">
+                
+                <div class="modal-buttons">
+                    <button type="submit" id="modal-simpan-btn">Simpan</button>
+                    <button type="button" id="modal-batal-btn">Batal</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
