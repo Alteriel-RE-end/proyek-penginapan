@@ -353,3 +353,103 @@ if (window.location.pathname.includes("dashboard.html")) {
         }
     });
 }
+
+// =================================================================
+// == BAGIAN 5: LOGIKA HALAMAN PUBLIK (INDEX.HTML)
+// =================================================================
+if (window.location.pathname === "/" || window.location.pathname.includes("index.html")) {
+
+    // --- Referensi Elemen Status & Alert ---
+    const statusVilla1 = document.getElementById('status-villa1');
+    const statusVilla2 = document.getElementById('status-villa2');
+    const statusKamar1 = document.getElementById('status-kamar1');
+    const alertBanner = document.getElementById('alert-banner');
+    const alertMessage = document.getElementById('alert-message');
+
+    // --- KONFIGURASI MQTT (UNTUK STATUS & ALERT) ---
+    // AMBIL KREDENSIAL DARI FIREBASE CONFIG (atau ENV VARS jika mau lebih aman)
+    // SEMENTARA PAKAI LANGSUNG (seperti di dashboard.html)
+    const MQTT_HOST_PUBLIC = 'wss://4d8b5862577245479751349efcbff1a3.s1.eu.hivemq.cloud:8884/mqtt'; // Ganti! Contoh: wss://xxx.s1.eu.hivemq.cloud:8884/mqtt
+    const MQTT_USER_PUBLIC = 'esp32_user'; // Ganti! Contoh: esp32_user
+    const MQTT_PASS_PUBLIC = 'i2E45678'; // Ganti!
+    const VILLA1_TOPIC = 'villa_1/status';
+    const VILLA2_TOPIC = 'villa_2/status';
+    const KAMAR1_TOPIC = 'kamar_1/status';
+    const ALERT_TOPIC_PUBLIC = 'system/alerts'; // Topik alert
+
+    const publicClientId = 'web_public_' + Math.random().toString(16).substr(2, 8);
+    const publicOptions = {
+      clientId: publicClientId, username: MQTT_USER_PUBLIC, password: MQTT_PASS_PUBLIC,
+      // ... (opsi lain sama seperti di dashboard) ...
+    };
+
+    console.log('Menghubungkan ke MQTT Broker (Publik)...');
+    const publicClient = mqtt.connect(MQTT_HOST_PUBLIC, publicOptions);
+
+    publicClient.on('connect', () => {
+        console.log('Terhubung ke MQTT (Publik)!');
+        // Subscribe ke semua topik status DAN topik alert
+        publicClient.subscribe([VILLA1_TOPIC, VILLA2_TOPIC, KAMAR1_TOPIC, ALERT_TOPIC_PUBLIC], { qos: 0 }, (err) => {
+            if (err) console.error('Gagal subscribe (Publik): ', err);
+            else console.log('Berhasil subscribe ke topik status & alert');
+        });
+    });
+
+    publicClient.on('message', (topic, payload) => {
+        const message = payload.toString();
+        console.log(`Pesan diterima [Publik] ${topic}: ${message}`);
+        try {
+            const data = JSON.parse(message);
+
+            // --- TANGANI PESAN STATUS ---
+            if (topic === VILLA1_TOPIC) updateStatusElement(statusVilla1, data);
+            else if (topic === VILLA2_TOPIC) updateStatusElement(statusVilla2, data);
+            else if (topic === KAMAR1_TOPIC) updateStatusElement(statusKamar1, data);
+            // --- TANGANI PESAN ALERT (BARU) ---
+            else if (topic === ALERT_TOPIC_PUBLIC) {
+                if (data.type === 'unregistered_card') {
+                    displayAlert(`Kartu tidak terdaftar terdeteksi! UID: ${data.uid} di ${data.location}`);
+                }
+                // Bisa tambahkan tipe alert lain di sini nanti
+            }
+        } catch(e) { console.error('Gagal parse JSON (Publik):', e); }
+    });
+
+    publicClient.on('error', (err) => console.error('Koneksi MQTT Error (Publik): ', err));
+
+    // --- Fungsi Helper untuk Update Status ---
+    function updateStatusElement(element, data) {
+        if (!element) return;
+        if (data.status === 'TERISI') {
+            // Kita butuh mengambil nama dari API jika TERISI
+            fetch(`/api/kartu?uid=${data.uid}`) // Asumsi API kartu bisa handle GET by UID
+                .then(res => res.ok ? res.json() : null)
+                .then(kartu => {
+                    const namaTamu = kartu && kartu.length > 0 ? kartu[0].namaTamu : 'UID: ' + data.uid; // Tampilkan UID jika nama tidak ada
+                    element.textContent = `TERISI 🔴 (${namaTamu})`;
+                    element.style.color = '#dc3545';
+                })
+                .catch(() => { // Gagal fetch nama, tampilkan UID saja
+                     element.textContent = `TERISI 🔴 (UID: ${data.uid})`;
+                     element.style.color = '#dc3545';
+                });
+        } else { // KOSONG
+            element.textContent = 'KOSONG 🟢';
+            element.style.color = '#28a745';
+        }
+    }
+
+     // --- Fungsi Helper untuk Menampilkan Alert ---
+    let alertTimeout;
+    function displayAlert(message) {
+        if (!alertBanner || !alertMessage) return;
+        alertMessage.textContent = message;
+        alertBanner.style.display = 'block';
+        
+        // Sembunyikan otomatis setelah 7 detik
+        clearTimeout(alertTimeout); // Hapus timeout sebelumnya jika ada
+        alertTimeout = setTimeout(() => {
+            alertBanner.style.display = 'none';
+        }, 7000); 
+    }
+} // Akhir blok if index.html
