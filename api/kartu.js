@@ -96,3 +96,4 @@ export default async function handler(request, response) {
             return response.status(500).json({ message: 'Gagal melakukan aksi hapus', error: error.message });
         }
     }
+}
