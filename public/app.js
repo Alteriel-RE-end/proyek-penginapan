@@ -352,6 +352,51 @@ if (window.location.pathname.includes("dashboard.html")) {
             hapusKartuPermanen(uid); // Panggil fungsi baru
         }
     });
+
+    // === TAMBAHAN UNTUK NAVIGASI DETAIL ===
+    if (window.location.pathname.includes("dashboard.html")) {
+    // ... (Kode elemen dan logika tab sudah ada di atas) ...
+
+        const allSections = document.querySelectorAll('main section');
+        const propertyCards = document.querySelectorAll('.property-card');
+        const backButtons = document.querySelectorAll('.back-button');
+
+        // Fungsi untuk menampilkan section tertentu dan menyembunyikan yang lain
+        function showSection(sectionId) {
+            allSections.forEach(section => {
+                section.style.display = (section.id === sectionId) ? 'block' : 'none';
+            });
+            // Pastikan navigasi tab juga sesuai (jika perlu)
+            if (sectionId === 'content-dashboard' || sectionId === 'content-kartu') {
+                navDashboard.classList.toggle('active', sectionId === 'content-dashboard');
+                navKartu.classList.toggle('active', sectionId === 'content-kartu');
+            } else { // Jika masuk ke detail, nonaktifkan kedua nav tab
+                navDashboard.classList.remove('active');
+                navKartu.classList.remove('active');
+            }
+        }
+
+        // Event listener untuk kartu properti
+        propertyCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const targetSectionId = card.dataset.target; // Ambil ID section dari atribut data-target
+                showSection(targetSectionId);
+            });
+        });
+
+        // Event listener untuk tombol kembali
+        backButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetSectionId = button.dataset.target; // Ambil ID section dari atribut data-target
+                showSection(targetSectionId);
+            });
+        });
+
+        // Tampilkan section dashboard utama saat halaman dimuat
+        // Kita panggil di sini agar logika showSection bisa diakses
+        showSection('content-dashboard');
+
+    } // <-- Pastikan ini penutup untuk if dashboard.html yang benar
 }
 
 // =================================================================

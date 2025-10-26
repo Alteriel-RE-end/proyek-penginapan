@@ -21,7 +21,20 @@
         <main id="dashboard-content">
             <section id="content-dashboard">
                 <h2>Ringkasan Properti</h2>
-                <p>Bagian ini akan menampilkan grafik dan status detail (dalam pengembangan).</p>
+                <div class="card-container">
+                    <div class="property-card" data-target="detail-villa1">
+                        <h3>Villa 1</h3>
+                        <p>Status: <span id="overview-status-villa1">Memuat...</span></p>
+                    </div>
+                    <div class="property-card" data-target="detail-villa2">
+                        <h3>Villa 2</h3>
+                        <p>Status: <span id="overview-status-villa2">Memuat...</span></p>
+                    </div>
+                    <div class="property-card" data-target="detail-kamar1">
+                        <h3>Kamar 1</h3>
+                        <p>Status: <span id="overview-status-kamar1">Memuat...</span></p>
+                        </div>
+                </div>
             </section>
 
             <section id="content-kartu" style="display: none;">
@@ -35,9 +48,58 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="kartu-table-body">
-                        </tbody>
+                    <tbody id="kartu-table-body"></tbody>
                 </table>
+            </section>
+
+            <section id="detail-villa1" class="detail-section" style="display: none;">
+                <h2>Detail Villa 1</h2>
+                <button class="back-button" data-target="content-dashboard">Kembali ke Ringkasan</button>
+                <div class="metric-grid">
+                    <div class="metric-card"><h3>Tegangan (V)</h3><canvas id="chart-villa1-tegangan"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Arus (A)</h3><canvas id="chart-villa1-arus"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Daya (W)</h3><canvas id="chart-villa1-daya"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Energi (kWh)</h3><canvas id="chart-villa1-energi"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Frekuensi (Hz)</h3><canvas id="chart-villa1-frekuensi"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Power Factor</h3><canvas id="chart-villa1-pf"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                </div>
+            </section>
+
+            <section id="detail-villa2" class="detail-section" style="display: none;">
+                <h2>Detail Villa 2</h2>
+                <button class="back-button" data-target="content-dashboard">Kembali ke Ringkasan</button>
+                <div class="metric-grid">
+                    <div class="metric-card"><h3>Tegangan (V)</h3><canvas id="chart-villa2-tegangan"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Arus (A)</h3><canvas id="chart-villa2-arus"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Daya (W)</h3><canvas id="chart-villa2-daya"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Energi (kWh)</h3><canvas id="chart-villa2-energi"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Frekuensi (Hz)</h3><canvas id="chart-villa2-frekuensi"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Power Factor</h3><canvas id="chart-villa2-pf"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                </div>
+            </section>
+
+            <section id="detail-kamar1" class="detail-section" style="display: none;">
+                <h2>Detail Kamar 1</h2>
+                <button class="back-button" data-target="content-dashboard">Kembali ke Ringkasan</button>
+                
+                <div class="kamar-header">
+                    <div id="kamar1-status-hunian">Status Hunian: [Placeholder]</div>
+                    <div id="kamar1-kualitas-udara">Kualitas Udara: [Placeholder]</div>
+                </div>
+                <div id="kamar1-kontrol-relay">Kontrol Relay: [Placeholder]</div>
+                <div id="kamar1-pengaturan-relay">Pengaturan Nama Relay: [Placeholder]</div>
+
+                <div class="metric-grid">
+                    <div class="metric-card"><h3>Suhu (°C)</h3><canvas id="chart-kamar1-suhu"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Kelembapan (%)</h3><canvas id="chart-kamar1-kelembapan"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Kualitas Udara (PPM)</h3><canvas id="chart-kamar1-ppm"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Tegangan (V)</h3><canvas id="chart-kamar1-tegangan"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Arus (A)</h3><canvas id="chart-kamar1-arus"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Daya (W)</h3><canvas id="chart-kamar1-daya"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Energi (kWh)</h3><canvas id="chart-kamar1-energi"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Frekuensi (Hz)</h3><canvas id="chart-kamar1-frekuensi"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    <div class="metric-card"><h3>Power Factor</h3><canvas id="chart-kamar1-pf"></canvas><div class="chart-controls">Resolusi: [Placeholder]</div><div class="stats-cards">Stats: [Placeholder]</div></div>
+                    </div>
             </section>
         </main>
     </div>
