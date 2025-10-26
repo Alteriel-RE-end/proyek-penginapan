@@ -463,24 +463,45 @@ if (window.location.pathname === "/" || window.location.pathname.includes("index
     publicClient.on('error', (err) => console.error('Koneksi MQTT Error (Publik): ', err));
 
     // --- Fungsi Helper untuk Update Status ---
-    function updateStatusElement(element, data) {
+    async function updateStatusElement(element, data) {
         if (!element) return;
+
+        element.style.color = '#777'; // Warna default (abu-abu) saat memuat
+        element.textContent = 'Memuat...'; 
+
         if (data.status === 'TERISI') {
-            // Kita butuh mengambil nama dari API jika TERISI
-            fetch(`/api/kartu?uid=${data.uid}`) // Asumsi API kartu bisa handle GET by UID
-                .then(res => res.ok ? res.json() : null)
-                .then(kartu => {
-                    const namaTamu = kartu && kartu.length > 0 ? kartu[0].namaTamu : 'UID: ' + data.uid; // Tampilkan UID jika nama tidak ada
-                    element.textContent = `TERISI 🔴 (${namaTamu})`;
-                    element.style.color = '#dc3545';
-                })
-                .catch(() => { // Gagal fetch nama, tampilkan UID saja
-                     element.textContent = `TERISI 🔴 (UID: ${data.uid})`;
-                     element.style.color = '#dc3545';
-                });
+            try {
+                // Panggil API untuk mendapatkan nama berdasarkan UID
+                const response = await fetch(`/api/kartu?uid=${data.uid}`); 
+                if (response.ok) {
+                    const kartuArray = await response.json();
+                    // API mengembalikan array, ambil elemen pertama
+                    if (kartuArray && kartuArray.length > 0) {
+                        const namaTamu = kartuArray[0].namaTamu || `UID: ${data.uid}`; // Fallback ke UID jika nama kosong
+                        element.textContent = `TERISI 🔴 (${namaTamu})`;
+                        element.style.color = '#dc3545'; // Merah
+                    } else {
+                        // UID ditemukan tapi mungkin ada error data
+                        element.textContent = `TERISI 🔴 (UID: ${data.uid})`;
+                        element.style.color = '#dc3545'; // Merah
+                    }
+                } else if (response.status === 404) {
+                    // Kartu tidak ditemukan di database nama (seharusnya tidak terjadi jika logic benar)
+                    element.textContent = `TERISI 🔴 (UID: ${data.uid} - Belum Terdaftar?)`;
+                    element.style.color = '#dc3545'; // Merah
+                } else {
+                    // Error API lainnya
+                    throw new Error(`API Error: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Gagal fetch nama tamu:', error);
+                // Gagal fetch nama, tampilkan UID saja
+                element.textContent = `TERISI 🔴 (UID: ${data.uid})`;
+                element.style.color = '#dc3545'; // Merah
+            }
         } else { // KOSONG
             element.textContent = 'KOSONG 🟢';
-            element.style.color = '#28a745';
+            element.style.color = '#28a745'; // Hijau
         }
     }
 
