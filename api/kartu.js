@@ -67,24 +67,32 @@ export default async function handler(request, response) {
     }
 
     // ==========================================================
-    // AKSI 4: MENGHAPUS NAMA TAMU / CHECKOUT (DELETE)
+    // AKSI 4: MENGHAPUS NAMA ATAU KARTU (DELETE)
     // ==========================================================
     if (request.method === 'DELETE') {
         try {
+            // Ambil UID dari body request
             const { uid } = request.body;
             if (!uid) {
                 return response.status(400).json({ message: 'UID kartu diperlukan' });
             }
-            // Kita tidak hapus kartunya, tapi kita 'reset' namaTamu-nya
-            await db.collection(COLLECTION_NAME).doc(uid).update({
-                namaTamu: '[ Kosong ]'
-            });
-            return response.status(200).json({ message: `Nama tamu di kartu ${uid} berhasil dihapus` });
+
+            // Cek apakah ada query parameter '?hapusPermanen=true'
+            const hapusPermanen = request.query.hapusPermanen === 'true';
+
+            if (hapusPermanen) {
+                // --- HAPUS KARTU PERMANEN ---
+                await db.collection(COLLECTION_NAME).doc(uid).delete();
+                return response.status(200).json({ message: `Kartu ${uid} berhasil dihapus permanen` });
+            } else {
+                // --- KOSONGKAN NAMA TAMU SAJA ---
+                await db.collection(COLLECTION_NAME).doc(uid).update({
+                    namaTamu: '[ Kosong ]'
+                });
+                return response.status(200).json({ message: `Nama tamu di kartu ${uid} berhasil dikosongkan` });
+            }
+
         } catch (error) {
-            return response.status(500).json({ message: 'Gagal menghapus nama tamu', error: error.message });
+            return response.status(500).json({ message: 'Gagal melakukan aksi hapus', error: error.message });
         }
     }
-
-    // Jika metode lain (selain GET, POST, PUT, DELETE)
-    return response.status(405).json({ message: 'Method Not Allowed' });
-}

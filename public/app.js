@@ -204,6 +204,7 @@ if (window.location.pathname.includes("dashboard.html")) {
                     <td>
                         <button class="button-edit" data-uid="${kartu.id}" data-nama="${kartu.namaTamu}">Edit</button>
                         <button class="button-delete" data-uid="${kartu.id}">Kosongkan</button>
+                        <button class="button-delete-permanent" data-uid="${kartu.id}">Hapus Permanen</button>
                     </td>
                 `;
                 kartuTableBody.appendChild(tr);
@@ -294,6 +295,32 @@ if (window.location.pathname.includes("dashboard.html")) {
         }
     }
 
+    // === TAMBAHKAN FUNGSI BARU DI SINI ===
+    // 6. Aksi Hapus Permanen
+    async function hapusKartuPermanen(uid) {
+        if (!confirm(`PERINGATAN: Anda yakin ingin menghapus kartu ${uid} secara permanen? Aksi ini tidak bisa dibatalkan.`)) {
+            return;
+        }
+
+        try {
+            // Panggil API dengan query parameter
+            const response = await fetch('/api/kartu?hapusPermanen=true', { 
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: uid })
+            });
+
+            if (!response.ok) {
+                throw new Error(await response.json().message);
+            }
+
+            muatDataKartu(); // Muat ulang tabel
+
+        } catch (error) {
+            console.error('Gagal menghapus permanen:', error);
+            alert(`Gagal menghapus permanen: ${error.message}`);
+        }
+    }
 
     // --- Event Listeners (Penghubung Aksi) ---
 
@@ -317,6 +344,12 @@ if (window.location.pathname.includes("dashboard.html")) {
         if (e.target.classList.contains('button-delete')) {
             const uid = e.target.dataset.uid;
             hapusNamaTamu(uid);
+        }
+
+        // Tombol Hapus Permanen
+        if (e.target.classList.contains('button-delete-permanent')) {
+            const uid = e.target.dataset.uid;
+            hapusKartuPermanen(uid); // Panggil fungsi baru
         }
     });
 }

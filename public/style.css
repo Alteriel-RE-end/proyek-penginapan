@@ -211,3 +211,14 @@ th {
 #modal-batal-btn:hover {
     background-color: #5a6268;
 }
+
+.button-delete-permanent {
+    width: auto;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    margin-left: 5px; /* Beri jarak */
+    background-color: #6c757d; /* Warna beda, misal abu */
+}
+.button-delete-permanent:hover {
+    background-color: #5a6268;
+}
