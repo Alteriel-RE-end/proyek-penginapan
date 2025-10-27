@@ -1,16 +1,21 @@
-// api/_lib/firebaseAdmin.js
+// api/firebaseAdmin.js
 import admin from 'firebase-admin';
 
 // Ambil data JSON kunci rahasia dari Environment Variable
-const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
+// PENTING: Gunakan try/catch di sini untuk menghindari crash saat Vercel mencoba membacanya
+try {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
 
-// Cek apakah Firebase sudah diinisialisasi
-if (!admin.apps.length) {
-  // Jika belum, inisialisasi dengan kunci rahasia
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+    }
+
+} catch (e) {
+    console.error("Firebase Admin Initialization FAILED:", e.message);
+    // Jika Vercel gagal memuat, kita log errornya
 }
 
-// Ekspor 'db', yaitu koneksi ke database Firestore
+// Ekspor koneksi ke database Firestore
 export const db = admin.firestore();
