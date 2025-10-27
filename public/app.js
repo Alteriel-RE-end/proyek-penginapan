@@ -319,13 +319,9 @@ if (window.location.pathname.includes("dashboard.html")) {
         }
     }
 
-
-    // --- FUNGSI GRAFIK (DUMMY DATA - HARUS DIGANTI DENGAN FETCH API) ---
+    // --- FUNGSI MENGGAMBAR SATU GRAFIK (MENGAMBIL DATA RIIL) ---
     let activeCharts = {}; // Objek untuk menyimpan referensi grafik yang aktif
 
-    // --- FUNGSI MENGGAMBAR SATU GRAFIK (MENGAMBIL DATA RIIL) ---
-    // Note: Perlu dimodifikasi agar sesuai dengan fetch API dari InfluxDB
-    // (Ganti fungsi drawChart DUMMY yang lama dengan ini)
     async function drawChart(canvasId, title, unit, deviceId, field, range = '1h', agg = '10s') {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
@@ -338,15 +334,17 @@ if (window.location.pathname.includes("dashboard.html")) {
         statsContainer.innerHTML = '<p style="color:#007bff;">Memuat data...</p>';
 
         try {
+            // Panggil API Vercel /api/getData
             const apiUrl = `/api/getData?id=${deviceId}&field=${field}&range=${range}&agg=${agg}`;
             const response = await fetch(apiUrl);
+            
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             
             const result = await response.json();
-            const chartData = result.data;
+            const chartData = result.data; // Data yang sudah di-aggregate
             const statsData = result.stats;
 
-            // 1. Tampilkan Statistik
+            // 1. Tampilkan Statistik (Rata-rata Hari Ini vs Kemarin)
             const hariIni = statsData.hari_ini !== null ? statsData.hari_ini.toFixed(2) : '--';
             const kemarin = statsData.kemarin !== null ? statsData.kemarin.toFixed(2) : '--';
             
@@ -354,6 +352,11 @@ if (window.location.pathname.includes("dashboard.html")) {
                 <div class="stat-item"><strong>Hari Ini:</strong> <span style="font-weight:bold;">${hariIni} ${unit}</span></div>
                 <div class="stat-item"><strong>Kemarin:</strong> <span style="font-weight:bold;">${kemarin} ${unit}</span></div>
             `;
+            
+            // Cek data kosong untuk menghindari error chart.js
+            if (chartData.length === 0) {
+                statsContainer.innerHTML += '<p style="color:#dc3545;">(Data Historis Belum Ada)</p>';
+            }
 
             // 2. Gambar Grafik
             const newChart = new Chart(ctx, {
@@ -370,7 +373,12 @@ if (window.location.pathname.includes("dashboard.html")) {
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
-                        x: { type: 'time', adapters: { date: luxon }, time: { unit: 'minute', tooltipFormat: 'HH:mm:ss', displayFormats: { minute: 'HH:mm' } }, title: { display: true, text: 'Waktu' } },
+                        x: { 
+                            type: 'time', 
+                            adapters: { date: luxon }, 
+                            time: { unit: 'minute', tooltipFormat: 'HH:mm:ss', displayFormats: { minute: 'HH:mm' } }, 
+                            title: { display: true, text: 'Waktu' } 
+                        },
                         y: { beginAtZero: false, title: { display: true, text: unit } }
                     },
                     plugins: { title: { display: true, text: title }, legend: { display: false } }
@@ -381,7 +389,7 @@ if (window.location.pathname.includes("dashboard.html")) {
 
         } catch (error) {
             console.error(`Gagal memuat data grafik (${field}):`, error);
-            statsContainer.innerHTML = '<span style="color:red;">Gagal memuat data dari InfluxDB.</span>';
+            statsContainer.innerHTML = '<span style="color:red;">Gagal memuat data dari InfluxDB. Cek koneksi API.</span>';
         }
     }
 
@@ -503,6 +511,55 @@ if (window.location.pathname.includes("dashboard.html")) {
             } else if (targetSectionId === 'detail-villa2') {
                 renderAllCharts('villa_2');
             }
+        });
+    });
+
+    // --- FUNGSI BARU: MUAT NAMA RELAY DARI FIRESTORE ---
+    async function loadRelayNames() {
+        try {
+            // Panggil API untuk mengambil setting Kamar 1
+            const response = await fetch('/api/getSettings?id=kamar_1_settings');
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.relayNames) {
+                    // Update variabel global relayNames dengan nama dari Firestore
+                    relayNames = data.relayNames; 
+                    console.log('Nama relay dimuat dari Firestore.');
+                }
+            }
+        } catch (error) {
+            console.error('Gagal memuat nama relay dari Firestore:', error);
+            // Jika gagal, gunakan nama default (yang ada di deklarasi relayNames)
+        }
+    }
+
+    // --- MODIFIKASI: initializeKamar1Detail ---
+    async function initializeKamar1Detail() {
+        await loadRelayNames(); // <-- PENTING: Tunggu nama dimuat
+        
+        renderRelayControls();
+        renderRelaySettings();
+        renderAirQuality(1500); // Dummy PPM
+        renderAllCharts(KAMAR1_ID); // Gambar Grafik Kamar 1
+    }
+
+    // --- MODIFIKASI: Event Listener Utama (Tambahkan Panggilan Grafik) ---
+    document.querySelectorAll('.property-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const targetSectionId = card.dataset.target;
+            showSection(targetSectionId); 
+
+            if (targetSectionId === 'detail-kamar1') {
+                initializeKamar1Detail();
+            } else if (targetSectionId === 'detail-villa1') {
+                renderAllCharts('villa_1');
+            } else if (targetSectionId === 'detail-villa2') {
+                renderAllCharts('villa_2');
+            }
+            
+            // PENTING: Setup listener setelah detail dimuat
+            setTimeout(setupChartListeners, 100); 
         });
     });
 
