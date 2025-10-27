@@ -1,5 +1,5 @@
 // api/getSettings.js
-import { db } from './_lib/firebaseAdmin';
+import { db } from './firebaseAdmin';
 
 const SETTINGS_COLLECTION = 'pengaturan_unit';
 

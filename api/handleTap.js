@@ -1,5 +1,5 @@
 // api/handleTap.js
-import { db } from './_lib/firebaseAdmin'; // Helper Firebase kita
+import { db } from './firebaseAdmin'; // Helper Firebase kita
 import mqtt from 'mqtt'; // Library MQTT
 
 // Nama koleksi di Firestore (pastikan konsisten)

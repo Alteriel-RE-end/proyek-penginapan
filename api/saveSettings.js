@@ -1,5 +1,5 @@
 // api/saveSettings.js
-import { db } from './_lib/firebaseAdmin';
+import { db } from './firebaseAdmin';
 
 const SETTINGS_COLLECTION = 'pengaturan_unit';
 const KAMAR1_DOC_ID = 'kamar_1_settings'; 

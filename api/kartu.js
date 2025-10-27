@@ -1,5 +1,5 @@
 // api/kartu.js
-import { db } from './_lib/firebaseAdmin';
+import { db } from './firebaseAdmin';
 
 // Sesuai kesepakatan, nama koleksi kita adalah 'kartu_tamu'
 const COLLECTION_NAME = 'kartu_tamu';
