@@ -453,6 +453,7 @@ if (window.location.pathname.includes("dashboard.html")) {
             // Panggil renderAllCharts, lalu pasang listener setelah 100ms
             renderAllCharts('villa_2');
             setTimeout(setupChartListeners, 100);
+        }
         });
     });
 

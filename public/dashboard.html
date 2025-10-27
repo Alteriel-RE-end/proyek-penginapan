@@ -55,23 +55,76 @@
                 </table>
             </section>
 
-            <div id="resolution-buttons" style="display:none">
-                <button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button>
-                <button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button>
-                <button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button>
-                <button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button>
-            </div>
-            
             <section id="detail-villa1" class="detail-section" style="display: none;">
                 <h2>Detail Villa 1</h2>
                 <button class="back-button" data-target="content-dashboard">Kembali ke Ringkasan</button>
                 <div class="metric-grid">
-                    <div class="metric-card" data-device-id="villa_1" data-field-id="tegangan" data-unit-id="V"><h3>Tegangan (V)</h3><div class="chart-controls"></div><canvas id="chart-villa1-tegangan"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_1" data-field-id="arus" data-unit-id="A"><h3>Arus (A)</h3><div class="chart-controls"></div><canvas id="chart-villa1-arus"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_1" data-field-id="daya" data-unit-id="W"><h3>Daya (W)</h3><div class="chart-controls"></div><canvas id="chart-villa1-daya"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_1" data-field-id="energi" data-unit-id="kWh"><h3>Energi (kWh)</h3><div class="chart-controls"></div><canvas id="chart-villa1-energi"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_1" data-field-id="frekuensi" data-unit-id="Hz"><h3>Frekuensi (Hz)</h3><div class="chart-controls"></div><canvas id="chart-villa1-frekuensi"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_1" data-field-id="pf" data-unit-id="PF"><h3>Power Factor</h3><div class="chart-controls"></div><canvas id="chart-villa1-pf"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="villa_1" data-field-id="tegangan" data-unit-id="V">
+                        <h3>Tegangan (V)</h3>
+                        <div class="chart-controls">
+                            <button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button>
+                            <button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button>
+                            <button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button>
+                            <button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button>
+                        </div>
+                        <canvas id="chart-villa1-tegangan"></canvas>
+                        <div class="stats-cards"></div>
+                    </div>
+                    <div class="metric-card" data-device-id="villa_1" data-field-id="arus" data-unit-id="A">
+                        <h3>Arus (A)</h3>
+                        <div class="chart-controls">
+                            <button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button>
+                            <button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button>
+                            <button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button>
+                            <button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button>
+                        </div>
+                        <canvas id="chart-villa1-arus"></canvas>
+                        <div class="stats-cards"></div>
+                    </div>
+                    <div class="metric-card" data-device-id="villa_1" data-field-id="daya" data-unit-id="W">
+                        <h3>Daya (W)</h3>
+                        <div class="chart-controls">
+                            <button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button>
+                            <button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button>
+                            <button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button>
+                            <button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button>
+                        </div>
+                        <canvas id="chart-villa1-daya"></canvas>
+                        <div class="stats-cards"></div>
+                    </div>
+                    <div class="metric-card" data-device-id="villa_1" data-field-id="energi" data-unit-id="kWh">
+                        <h3>Energi (kWh)</h3>
+                        <div class="chart-controls">
+                            <button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button>
+                            <button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button>
+                            <button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button>
+                            <button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button>
+                        </div>
+                        <canvas id="chart-villa1-energi"></canvas>
+                        <div class="stats-cards"></div>
+                    </div>
+                    <div class="metric-card" data-device-id="villa_1" data-field-id="frekuensi" data-unit-id="Hz">
+                        <h3>Frekuensi (Hz)</h3>
+                        <div class="chart-controls">
+                            <button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button>
+                            <button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button>
+                            <button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button>
+                            <button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button>
+                        </div>
+                        <canvas id="chart-villa1-frekuensi"></canvas>
+                        <div class="stats-cards"></div>
+                    </div>
+                    <div class="metric-card" data-device-id="villa_1" data-field-id="pf" data-unit-id="PF">
+                        <h3>Power Factor</h3>
+                        <div class="chart-controls">
+                            <button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button>
+                            <button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button>
+                            <button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button>
+                            <button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button>
+                        </div>
+                        <canvas id="chart-villa1-pf"></canvas>
+                        <div class="stats-cards"></div>
+                    </div>
                 </div>
             </section>
 
@@ -79,12 +132,12 @@
                 <h2>Detail Villa 2</h2>
                 <button class="back-button" data-target="content-dashboard">Kembali ke Ringkasan</button>
                 <div class="metric-grid">
-                    <div class="metric-card" data-device-id="villa_2" data-field-id="tegangan" data-unit-id="V"><h3>Tegangan (V)</h3><div class="chart-controls"></div><canvas id="chart-villa2-tegangan"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_2" data-field-id="arus" data-unit-id="A"><h3>Arus (A)</h3><div class="chart-controls"></div><canvas id="chart-villa2-arus"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_2" data-field-id="daya" data-unit-id="W"><h3>Daya (W)</h3><div class="chart-controls"></div><canvas id="chart-villa2-daya"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_2" data-field-id="energi" data-unit-id="kWh"><h3>Energi (kWh)</h3><div class="chart-controls"></div><canvas id="chart-villa2-energi"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_2" data-field-id="frekuensi" data-unit-id="Hz"><h3>Frekuensi (Hz)</h3><div class="chart-controls"></div><canvas id="chart-villa2-frekuensi"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="villa_2" data-field-id="pf" data-unit-id="PF"><h3>Power Factor</h3><div class="chart-controls"></div><canvas id="chart-villa2-pf"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="villa_2" data-field-id="tegangan" data-unit-id="V"><h3>Tegangan (V)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-villa2-tegangan"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="villa_2" data-field-id="arus" data-unit-id="A"><h3>Arus (A)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-villa2-arus"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="villa_2" data-field-id="daya" data-unit-id="W"><h3>Daya (W)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-villa2-daya"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="villa_2" data-field-id="energi" data-unit-id="kWh"><h3>Energi (kWh)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-villa2-energi"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="villa_2" data-field-id="frekuensi" data-unit-id="Hz"><h3>Frekuensi (Hz)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-villa2-frekuensi"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="villa_2" data-field-id="pf" data-unit-id="PF"><h3>Power Factor</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-villa2-pf"></canvas><div class="stats-cards"></div></div>
                 </div>
             </section>
 
@@ -100,15 +153,15 @@
                 <div id="kamar1-pengaturan-relay">Pengaturan Nama Relay: [Placeholder]</div>
 
                 <div class="metric-grid">
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="suhu" data-unit-id="°C"><h3>Suhu (°C)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-suhu"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="kelembapan" data-unit-id="% RH"><h3>Kelembapan (%)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-kelembapan"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="ppm_udara" data-unit-id="PPM"><h3>Kualitas Udara (PPM)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-ppm"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="tegangan" data-unit-id="V"><h3>Tegangan (V)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-tegangan"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="arus" data-unit-id="A"><h3>Arus (A)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-arus"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="daya" data-unit-id="W"><h3>Daya (W)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-daya"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="energi" data-unit-id="kWh"><h3>Energi (kWh)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-energi"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="frekuensi" data-unit-id="Hz"><h3>Frekuensi (Hz)</h3><div class="chart-controls"></div><canvas id="chart-kamar1-frekuensi"></canvas><div class="stats-cards"></div></div>
-                    <div class="metric-card" data-device-id="kamar_1" data-field-id="pf" data-unit-id="PF"><h3>Power Factor</h3><div class="chart-controls"></div><canvas id="chart-kamar1-pf"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="suhu" data-unit-id="°C"><h3>Suhu (°C)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-suhu"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="kelembapan" data-unit-id="% RH"><h3>Kelembapan (%)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-kelembapan"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="ppm_udara" data-unit-id="PPM"><h3>Kualitas Udara (PPM)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-ppm"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="tegangan" data-unit-id="V"><h3>Tegangan (V)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-tegangan"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="arus" data-unit-id="A"><h3>Arus (A)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-arus"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="daya" data-unit-id="W"><h3>Daya (W)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-daya"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="energi" data-unit-id="kWh"><h3>Energi (kWh)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-energi"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="frekuensi" data-unit-id="Hz"><h3>Frekuensi (Hz)</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-frekuensi"></canvas><div class="stats-cards"></div></div>
+                    <div class="metric-card" data-device-id="kamar_1" data-field-id="pf" data-unit-id="PF"><h3>Power Factor</h3><div class="chart-controls"><button class="res-btn active" data-agg="10s" data-range="1h">10 Detik</button><button class="res-btn" data-agg="1m" data-range="6h">1 Menit</button><button class="res-btn" data-agg="10m" data-range="2d">10 Menit</button><button class="res-btn" data-agg="1h" data-range="7d">1 Jam</button></div><canvas id="chart-kamar1-pf"></canvas><div class="stats-cards"></div></div>
                 </div>
             </section>
         </main>
