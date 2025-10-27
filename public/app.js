@@ -302,6 +302,36 @@ if (window.location.pathname.includes("dashboard.html")) {
         } catch (error) { console.error('Gagal memuat data kartu:', error); kartuTableBody.innerHTML = '<tr><td colspan="4">Gagal memuat data.</td></tr>'; }
     }
     
+    // --- LOGIKA EVENT LISTENER UNTUK RESOLUSI (BARU) ---
+    function setupChartListeners() {
+        document.querySelectorAll('.metric-grid').forEach(grid => {
+            grid.addEventListener('click', (e) => {
+                const button = e.target.closest('.res-btn');
+                if (!button) return;
+
+                const card = button.closest('.metric-card');
+                const deviceId = card.dataset.deviceId;
+                const fieldId = card.dataset.fieldId;
+                const unit = card.dataset.unitId;
+
+                // Dapatkan parameter resolusi baru
+                const newAgg = button.dataset.agg;
+                const newRange = button.dataset.range;
+                
+                // Nonaktifkan tombol lain, aktifkan tombol ini
+                card.querySelectorAll('.res-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Panggil fungsi gambar ulang dengan resolusi baru
+                const canvasId = card.querySelector('canvas').id;
+                const title = card.querySelector('h3').textContent;
+                
+                // Panggil API Riil
+                drawChart(canvasId, title, unit, deviceId, fieldId, newRange, newAgg);
+            });
+        });
+    }
+
     function bukaModal(mode, data = {}) {
         isEditMode = (mode === 'edit');
         if (isEditMode) {
@@ -410,9 +440,19 @@ if (window.location.pathname.includes("dashboard.html")) {
             const targetSectionId = card.dataset.target;
             showSection(targetSectionId); 
 
-            if (targetSectionId === 'detail-kamar1') { initializeKamar1Detail(); } 
-            else if (targetSectionId === 'detail-villa1') { renderAllCharts('villa_1'); setTimeout(setupChartListeners, 100); } 
-            else if (targetSectionId === 'detail-villa2') { renderAllCharts('villa_2'); setTimeout(setupChartListeners, 100); }
+        if (targetSectionId === 'detail-kamar1') { 
+            // Inisialisasi Kamar 1 (sudah memanggil setupChartListeners di dalamnya)
+            initializeKamar1Detail(); 
+        } 
+        else if (targetSectionId === 'detail-villa1') { 
+            // Panggil renderAllCharts, lalu pasang listener setelah 100ms
+            renderAllCharts('villa_1'); 
+            setTimeout(setupChartListeners, 100); 
+        } 
+        else if (targetSectionId === 'detail-villa2') { 
+            // Panggil renderAllCharts, lalu pasang listener setelah 100ms
+            renderAllCharts('villa_2');
+            setTimeout(setupChartListeners, 100);
         });
     });
 
