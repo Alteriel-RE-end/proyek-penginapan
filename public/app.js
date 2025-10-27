@@ -29,8 +29,8 @@ const VILLA2_TOPIC = 'villa_2/status';
 const KAMAR1_STATUS_TOPIC = 'kamar_1/status';
 const ALERT_TOPIC_PUBLIC = 'system/alerts';
 const MQTT_HOST_PUBLIC = 'wss://4d8b5862577245479751349efcbff1a3.s1.eu.hivemq.cloud:8884/mqtt';
-const MQTT_USER_PUBLIC = 'esp32_user';
-const MQTT_PASS_PUBLIC = 'i2E45678';
+const MQTT_USER_PUBLIC = 'new_esp_user';
+const MQTT_PASS_PUBLIC = 'i2E45678910';
 
 
 // =================================================================
