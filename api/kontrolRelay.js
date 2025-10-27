@@ -4,13 +4,15 @@ import mqtt from 'mqtt';
 // Ambil kredensial HiveMQ dari Environment Variables Vercel
 const mqttOptions = {
     // Kredensial yang kita atur di Vercel Settings
-    host: process.env.4d8b5862577245479751349efcbff1a3.s1.eu.hivemq.cloud,
+    host: process.env.HIVEMQ_HOST,     // <-- BENAR: Mengakses variabel bernama HIVEMQ_HOST
     port: 8883,
     protocol: 'mqtts',
-    username: process.env.Hesp32_user,
-    password: process.env.i2E45678,
+    username: process.env.HIVEMQ_USER, // <-- BENAR: Mengakses variabel bernama HIVEMQ_USER
+    password: process.env.HIVEMQ_PASSWORD, // <-- BENAR: Mengakses variabel bernama HIVEMQ_PASSWORD
     clientId: `vercel_control_${Math.random().toString(16).substr(2, 8)}`
 };
+
+// ... (sisa kode API tetap sama) ...
 
 // Topik tujuan (sesuai yang di-subscribe oleh ESP32)
 const RELAY_TOPIC = 'kamar_1/kontrol'; 
