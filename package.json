@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module", 
+  "type": "module",
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
     "firebase-admin": "^13.5.0",
