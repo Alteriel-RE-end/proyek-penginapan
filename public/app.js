@@ -276,10 +276,15 @@ if (window.location.pathname.includes("dashboard.html")) {
         document.getElementById('relay-name-form').addEventListener('submit', handleSaveRelayNames);
     }
 
-    // --- Logika Simpan Nama Relay (Firetore) ---
+    // public/app.js - Fungsi handleSaveRelayNames yang sudah dimodifikasi
+
     async function handleSaveRelayNames(e) {
         e.preventDefault();
         
+        // Nonaktifkan tombol untuk mencegah double-click
+        const saveButton = e.target.querySelector('button[type="submit"]');
+        if (saveButton) saveButton.disabled = true;
+
         const newNames = {};
         for (let i = 1; i <= 4; i++) {
             const relayId = `RELAY${i}`;
@@ -287,14 +292,31 @@ if (window.location.pathname.includes("dashboard.html")) {
             newNames[relayId] = input;
         }
 
-        alert('Logika penyimpanan nama relay ke Firestore diaktifkan! (Masih simulasi)');
-        
-        // **TO DO: Di sini akan ada API Vercel baru untuk menyimpan newNames ke Firestore**
-        
-        // Update variabel lokal (sementara)
-        relayNames = newNames; 
-        renderRelayControls();
-        renderRelaySettings();
+        try {
+            // PANGGIL API VERCEL RIIL UNTUK MENYIMPAN
+            const response = await fetch('/api/saveSettings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ relayNames: newNames })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Gagal menyimpan ke server.');
+            }
+
+            // Jika sukses, update variabel lokal dan render ulang
+            relayNames = newNames;
+            renderRelayControls();
+            renderRelaySettings();
+            alert('Nama relay berhasil disimpan ke database!');
+            
+        } catch (error) {
+            alert(`Gagal menyimpan: ${error.message}`);
+            console.error('Save Settings Gagal:', error);
+        } finally {
+            if (saveButton) saveButton.disabled = false;
+        }
     }
 
 
@@ -438,13 +460,34 @@ if (window.location.pathname.includes("dashboard.html")) {
             drawChart(`chart-${unitId}-pf`, 'Power Factor', 'PF', deviceId, 'pf');
         }
     }
-    
-    // --- FUNGSI UTAMA UNTUK MENGISI HALAMAN DETAIL ---
-    function initializeKamar1Detail() {
+
+    // --- FUNGSI BARU: MUAT NAMA RELAY DARI FIRESTORE ---
+    async function loadRelayNames() {
+        try {
+            // Panggil API untuk mengambil setting Kamar 1
+            const response = await fetch('/api/getSettings?id=kamar_1_settings'); // Kita akan buat API ini di Langkah 3
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.relayNames) {
+                    relayNames = data.relayNames; // Update variabel global relayNames
+                    console.log('Nama relay dimuat dari Firestore.');
+                }
+            }
+        } catch (error) {
+            console.error('Gagal memuat nama relay dari Firestore:', error);
+        }
+    }
+
+    // public/app.js - Fungsi initializeKamar1Detail yang dimodifikasi
+
+    async function initializeKamar1Detail() { // <-- JADIKAN ASYNC
+        await loadRelayNames(); // <-- PENTING: Tunggu nama dimuat
+        
         renderRelayControls();
         renderRelaySettings();
         renderAirQuality(1500); // Dummy PPM
-        renderAllCharts(KAMAR1_ID); // Gambar Grafik Kamar 1
+        // renderAllCharts(KAMAR1_ID); // Grafik
     }
 
     // --- Event listener utama (NAVIGASI DETAIL) ---

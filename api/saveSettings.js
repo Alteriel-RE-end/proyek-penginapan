@@ -11,7 +11,7 @@ export default async function handler(request, response) {
     }
 
     try {
-        const { relayNames } = request.body; // Menerima objek {RELAY1: 'Lampu...', RELAY2: 'Kipas', ...}
+        const { relayNames } = request.body; // Menerima objek {RELAY1: 'Lampu...', ...}
 
         if (!relayNames || Object.keys(relayNames).length !== 4) {
             return response.status(400).json({ message: 'Data nama relay tidak lengkap.' });
@@ -20,7 +20,7 @@ export default async function handler(request, response) {
         // 1. Simpan nama relay ke dokumen Kamar 1 di Firestore
         await db.collection(SETTINGS_COLLECTION).doc(KAMAR1_DOC_ID).set({
             relayNames: relayNames
-        }, { merge: true }); // Gunakan merge:true agar tidak menimpa setting lain di dokumen ini
+        }, { merge: true }); // Merge:true agar tidak menimpa setting lain di dokumen ini
 
         return response.status(200).json({ message: 'Nama relay berhasil disimpan.' });
 
