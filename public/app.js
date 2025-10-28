@@ -14,12 +14,10 @@ const firebaseConfig = {
     appId: "1:1005287113235:web:aae10f8a8a610c1f69f5e6",
     measurementId: "G-7ENSJC42Q9"
 };
-
-// Inisialisasi Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// --- KONSTANTA DEVICE & MQTT (Umum) ---
+// --- KONSTANTA DEVICE & MQTT ---
 const KAMAR1_ID = 'kamar_1';
 const RELAY_TOPIC = 'kamar_1/kontrol';
 const VILLA1_TOPIC = 'villa_1/status';
@@ -27,9 +25,8 @@ const VILLA2_TOPIC = 'villa_2/status';
 const KAMAR1_STATUS_TOPIC = 'kamar_1/status';
 const ALERT_TOPIC_PUBLIC = 'system/alerts';
 const MQTT_HOST_PUBLIC = 'wss://4d8b5862577245479751349efcbff1a3.s1.eu.hivemq.cloud:8884/mqtt';
-const MQTT_USER_PUBLIC = 'new_esp_user';
-const MQTT_PASS_PUBLIC = 'i2E45678910';
-
+const MQTT_USER_PUBLIC = 'new_esp_user'; 
+const MQTT_PASS_PUBLIC = 'i2E45678910'; 
 
 // =================================================================
 // == BAGIAN 2: AUTENTIKASI & LOGIKA LOGIN/REGISTER
@@ -48,7 +45,7 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// --- LOGIKA KHUSUS HALAMAN LOGIN (Bagian 3) ---
+// --- LOGIKA KHUSUS HALAMAN LOGIN (Sama seperti sebelumnya) ---
 if (window.location.pathname.includes("login.html")) {
     const loginForm = document.getElementById("login-form");
     const registerForm = document.getElementById("register-form");
@@ -93,7 +90,7 @@ if (window.location.pathname.includes("login.html")) {
 
 
 // =================================================================
-// == BAGIAN 3: FUNGSI HELPER UMUM (Grafik, MQ-135, Navigasi)
+// == BAGIAN 3: FUNGSI HELPER UTAMA (GLOBAL SCOPE)
 // =================================================================
 
 let activeCharts = {}; // Referensi grafik aktif
@@ -135,7 +132,10 @@ async function drawChart(canvasId, title, unit, deviceId, field, range = '1h', a
         const apiUrl = `/api/getData?id=${deviceId}&field=${field}&range=${range}&agg=${agg}`;
         const response = await fetch(apiUrl);
         
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) {
+            const errorData = await response.json(); 
+            throw new Error(`HTTP ${response.status}: ${errorData.message || response.statusText}`);
+        }
         
         const result = await response.json();
         const chartData = result.data;
@@ -163,7 +163,7 @@ async function drawChart(canvasId, title, unit, deviceId, field, range = '1h', a
         }); activeCharts[canvasId] = newChart;
     } catch (error) {
         console.error(`Gagal memuat data grafik (${field}):`, error);
-        statsContainer.innerHTML = '<span style="color:red;">Gagal memuat data dari InfluxDB. Cek koneksi API.</span>';
+        statsContainer.innerHTML = `<span style="color:red;">Gagal memuat data. ${error.message}</span>`;
     }
 }
 
@@ -215,6 +215,8 @@ if (window.location.pathname.includes("dashboard.html")) {
     const modalNama = document.getElementById('modal-nama');
     const modalTitle = document.getElementById('modal-title');
     const tambahKartuBtn = document.getElementById('tambah-kartu-baru-btn');
+    const modalBatalBtn = document.getElementById('modal-batal-btn');
+    const logoutButton = document.getElementById('logout-button'); 
 
 
     let isEditMode = false;
@@ -296,7 +298,6 @@ if (window.location.pathname.includes("dashboard.html")) {
         }
     }
 
-
     // --- FUNGSI MANAJEMEN KARTU (CRUD & Modal) ---
 
     async function muatDataKartu() {
@@ -324,11 +325,6 @@ if (window.location.pathname.includes("dashboard.html")) {
     }
     
     function bukaModal(mode, data = {}) {
-        const modalBackdrop = document.getElementById('modal-backdrop');
-        const modalTitle = document.getElementById('modal-title');
-        const modalUid = document.getElementById('modal-uid');
-        const modalNama = document.getElementById('modal-nama');
-
         isEditMode = (mode === 'edit');
         if (isEditMode) {
             modalTitle.textContent = 'Edit Nama Tamu';
@@ -344,8 +340,6 @@ if (window.location.pathname.includes("dashboard.html")) {
     }
 
     function tutupModal() {
-        const modalBackdrop = document.getElementById('modal-backdrop');
-        const modalForm = document.getElementById('modal-form');
         modalBackdrop.style.display = 'none';
         modalForm.reset();
     }
@@ -405,31 +399,6 @@ if (window.location.pathname.includes("dashboard.html")) {
         } catch (error) { console.error('Gagal memuat nama relay dari Firestore:', error); }
     }
 
-    function setupChartListeners() {
-        document.querySelectorAll('.metric-grid').forEach(grid => {
-            grid.addEventListener('click', (e) => {
-                const button = e.target.closest('.res-btn');
-                if (!button) return;
-
-                const card = button.closest('.metric-card');
-                const deviceId = card.dataset.deviceId;
-                const fieldId = card.dataset.fieldId;
-                const unit = card.dataset.unitId;
-
-                const newAgg = button.dataset.agg;
-                const newRange = button.dataset.range;
-                
-                card.querySelectorAll('.res-btn').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                const canvasId = card.querySelector('canvas').id;
-                const title = card.querySelector('h3').textContent;
-                
-                drawChart(canvasId, title, unit, deviceId, fieldId, newRange, newAgg);
-            });
-        });
-    }
-
     function renderAllCharts(unitId) {
         if (unitId === KAMAR1_ID) {
             drawChart('chart-kamar1-suhu', 'Suhu Udara', '°C', KAMAR1_ID, 'suhu');
@@ -454,9 +423,7 @@ if (window.location.pathname.includes("dashboard.html")) {
 
     // --- LOGIKA EVENT LISTENERS UTAMA ---
     
-    const tambahKartuBtn = document.getElementById('tambah-kartu-baru-btn');
-    const modalBatalBtn = document.getElementById('modal-batal-btn');
-    const modalForm = document.getElementById('modal-form');
+    // Tombol Logout sudah didefinisikan di scope luar (Bagian 3)
 
     navDashboard.addEventListener('click', () => { showSection('content-dashboard'); });
     navKartu.addEventListener('click', () => { showSection('content-kartu'); muatDataKartu(); });
@@ -503,11 +470,10 @@ if (window.location.pathname === "/" || window.location.pathname.includes("index
     const alertBanner = document.getElementById('alert-banner');
     const alertMessage = document.getElementById('alert-message');
 
-    // KONFIGURASI MQTT PUBLIK (Sudah di atas)
+    // KONFIGURASI MQTT PUBLIK
     const publicClientId = 'web_public_' + Math.random().toString(16).substr(2, 8);
     const publicOptions = { clientId: publicClientId, username: MQTT_USER_PUBLIC, password: MQTT_PASS_PUBLIC };
 
-    console.log('Menghubungkan ke MQTT Broker (Publik)...');
     const publicClient = mqtt.connect(MQTT_HOST_PUBLIC, publicOptions);
 
     publicClient.on('connect', () => {
