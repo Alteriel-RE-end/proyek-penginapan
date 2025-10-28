@@ -1,11 +1,10 @@
 // =================================================================
-// == FILE: public/app.js (VERSI FINAL TERSTRUKTUR & LENGKAP)
+// == FILE: public/app.js (VERSI FINAL LENGKAP & TERKOREKSI)
 // =================================================================
 
 // =================================================================
 // == BAGIAN 1: KONFIGURASI UMUM (Firebase, Constants)
 // =================================================================
-// ⬇️⬇️⬇️ PASTIKAN KUNCI ANDA SUDAH BENAR ⬇️⬇️⬇️
 const firebaseConfig = {
     apiKey: "AIzaSyCeO7wuJuMcvLjv6geumpzmhUgEF09ytQs",
     authDomain: "proyek-penginapan.firebaseapp.com",
@@ -15,7 +14,6 @@ const firebaseConfig = {
     appId: "1:1005287113235:web:aae10f8a8a610c1f69f5e6",
     measurementId: "G-7ENSJC42Q9"
 };
-// ⬆️⬆️⬆️ PASTIKAN KUNCI ANDA SUDAH BENAR ⬆️⬆️⬆️
 
 // Inisialisasi Firebase
 firebase.initializeApp(firebaseConfig);
@@ -123,7 +121,7 @@ function showSection(sectionId) {
     }
 }
 
-// --- FUNGSI GRAFIK (MENGAMBIL DATA RIIL) ---
+// FUNGSI MENGGAMBAR SATU GRAFIK (MENGAMBIL DATA RIIL)
 async function drawChart(canvasId, title, unit, deviceId, field, range = '1h', agg = '10s') {
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
@@ -169,72 +167,35 @@ async function drawChart(canvasId, title, unit, deviceId, field, range = '1h', a
     }
 }
 
-    // --- LOGIKA EVENT LISTENER UNTUK RESOLUSI (BARU) ---
-    function setupChartListeners() {
-        document.querySelectorAll('.metric-grid').forEach(grid => {
-            grid.addEventListener('click', (e) => {
-                const button = e.target.closest('.res-btn');
-                if (!button) return;
+// --- LOGIKA EVENT LISTENER UNTUK RESOLUSI (BARU) ---
+function setupChartListeners() {
+    document.querySelectorAll('.metric-grid').forEach(grid => {
+        grid.addEventListener('click', (e) => {
+            const button = e.target.closest('.res-btn');
+            if (!button) return;
 
-                const card = button.closest('.metric-card');
-                const deviceId = card.dataset.deviceId;
-                const fieldId = card.dataset.fieldId;
-                const unit = card.dataset.unitId;
+            const card = button.closest('.metric-card');
+            const deviceId = card.dataset.deviceId;
+            const fieldId = card.dataset.fieldId;
+            const unit = card.dataset.unitId;
 
-                // Dapatkan parameter resolusi baru
-                const newAgg = button.dataset.agg;
-                const newRange = button.dataset.range;
-                
-                // Nonaktifkan tombol lain, aktifkan tombol ini
-                card.querySelectorAll('.res-btn').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
+            const newAgg = button.dataset.agg;
+            const newRange = button.dataset.range;
+            
+            card.querySelectorAll('.res-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
 
-                // Panggil fungsi gambar ulang dengan resolusi baru
-                const canvasId = card.querySelector('canvas').id;
-                const title = card.querySelector('h3').textContent;
-                
-                // Panggil API Riil
-                drawChart(canvasId, title, unit, deviceId, fieldId, newRange, newAgg);
-            });
+            const canvasId = card.querySelector('canvas').id;
+            const title = card.querySelector('h3').textContent;
+            
+            drawChart(canvasId, title, unit, deviceId, fieldId, newRange, newAgg);
         });
-    }
+    });
+}
 
-    // --- FUNGSI GRAFIK & INITIALIZE UTAMA ---
-    
-    function renderAllCharts(unitId) {
-        if (unitId === 'kamar_1') {
-            drawChart('chart-kamar1-suhu', 'Suhu Udara', '°C', KAMAR1_ID, 'suhu');
-            drawChart('chart-kamar1-kelembapan', 'Kelembapan', '% RH', KAMAR1_ID, 'kelembapan');
-            drawChart('chart-kamar1-ppm', 'Kualitas Udara', 'PPM', KAMAR1_ID, 'ppm_udara');
-            drawChart('chart-kamar1-tegangan', 'Tegangan', 'V', KAMAR1_ID, 'tegangan');
-            drawChart('chart-kamar1-arus', 'Arus', 'A', KAMAR1_ID, 'arus');
-            drawChart('chart-kamar1-daya', 'Daya', 'W', KAMAR1_ID, 'daya');
-            drawChart('chart-kamar1-energi', 'Energi', 'kWh', KAMAR1_ID, 'energi');
-            drawChart('chart-kamar1-frekuensi', 'Frekuensi', 'Hz', KAMAR1_ID, 'frekuensi');
-            drawChart('chart-kamar1-pf', 'Power Factor', 'PF', KAMAR1_ID, 'pf');
-        } else if (unitId === 'villa_1' || unitId === 'villa_2') {
-            const deviceId = unitId;
-            drawChart(`chart-${unitId}-tegangan`, 'Tegangan', 'V', deviceId, 'tegangan');
-            drawChart(`chart-${unitId}-arus`, 'Arus', 'A', deviceId, 'arus');
-            drawChart(`chart-${unitId}-daya`, 'Daya', 'W', deviceId, 'daya');
-            drawChart(`chart-${unitId}-energi`, 'Energi', 'kWh', deviceId, 'energi');
-            drawChart(`chart-${unitId}-frekuensi`, 'Frekuensi', 'Hz', deviceId, 'frekuensi');
-            drawChart(`chart-${unitId}-pf`, 'Power Factor', 'PF', deviceId, 'pf');
-        }
-    }
 
-    // FUNGSI UTAMA UNTUK MENGISI HALAMAN DETAIL
-    async function initializeKamar1Detail() {
-        await loadRelayNames();
-        renderRelayControls();
-        renderRelaySettings();
-        renderAirQuality(1500); // Dummy PPM
-        renderAllCharts(KAMAR1_ID);
-        setTimeout(setupChartListeners, 100); 
-    }
-    
 // =================================================================
-// == BAGIAN 5: LOGIKA UTAMA DASHBOARD (ADMIN)
+// == BAGIAN 4: LOGIKA UTAMA DASHBOARD (ADMIN)
 // =================================================================
 
 if (window.location.pathname.includes("dashboard.html")) {
@@ -253,9 +214,6 @@ if (window.location.pathname.includes("dashboard.html")) {
     const modalUid = document.getElementById('modal-uid');
     const modalNama = document.getElementById('modal-nama');
     const modalTitle = document.getElementById('modal-title');
-    const modalUidLama = document.getElementById('modal-uid-lama');
-    const modalSimpanBtn = document.getElementById('modal-simpan-btn');
-    const modalBatalBtn = document.getElementById('modal-batal-btn');
     const tambahKartuBtn = document.getElementById('tambah-kartu-baru-btn');
 
 
@@ -340,7 +298,7 @@ if (window.location.pathname.includes("dashboard.html")) {
 
 
     // --- FUNGSI MANAJEMEN KARTU (CRUD & Modal) ---
-    
+
     async function muatDataKartu() {
         try {
             const response = await fetch('/api/kartu');
@@ -364,8 +322,13 @@ if (window.location.pathname.includes("dashboard.html")) {
 
         } catch (error) { console.error('Gagal memuat data kartu:', error); kartuTableBody.innerHTML = '<tr><td colspan="4">Gagal memuat data.</td></tr>'; }
     }
-
+    
     function bukaModal(mode, data = {}) {
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalTitle = document.getElementById('modal-title');
+        const modalUid = document.getElementById('modal-uid');
+        const modalNama = document.getElementById('modal-nama');
+
         isEditMode = (mode === 'edit');
         if (isEditMode) {
             modalTitle.textContent = 'Edit Nama Tamu';
@@ -381,6 +344,8 @@ if (window.location.pathname.includes("dashboard.html")) {
     }
 
     function tutupModal() {
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalForm = document.getElementById('modal-form');
         modalBackdrop.style.display = 'none';
         modalForm.reset();
     }
@@ -417,8 +382,19 @@ if (window.location.pathname.includes("dashboard.html")) {
             muatDataKartu();
         } catch (error) { console.error('Gagal menghapus permanen:', error); alert(`Gagal menghapus permanen: ${error.message}`); }
     }
+
+
+    // --- FUNGSI INITIALIZE UTAMA ---
     
-    // Pemuatan Nama Relay dari Firestore
+    async function initializeKamar1Detail() {
+        await loadRelayNames();
+        renderRelayControls();
+        renderRelaySettings();
+        renderAirQuality(1500); // Dummy PPM
+        renderAllCharts(KAMAR1_ID);
+        setTimeout(setupChartListeners, 100); 
+    }
+
     async function loadRelayNames() {
         try {
             const response = await fetch('/api/getSettings?id=kamar_1_settings');
@@ -429,8 +405,59 @@ if (window.location.pathname.includes("dashboard.html")) {
         } catch (error) { console.error('Gagal memuat nama relay dari Firestore:', error); }
     }
 
+    function setupChartListeners() {
+        document.querySelectorAll('.metric-grid').forEach(grid => {
+            grid.addEventListener('click', (e) => {
+                const button = e.target.closest('.res-btn');
+                if (!button) return;
+
+                const card = button.closest('.metric-card');
+                const deviceId = card.dataset.deviceId;
+                const fieldId = card.dataset.fieldId;
+                const unit = card.dataset.unitId;
+
+                const newAgg = button.dataset.agg;
+                const newRange = button.dataset.range;
+                
+                card.querySelectorAll('.res-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                const canvasId = card.querySelector('canvas').id;
+                const title = card.querySelector('h3').textContent;
+                
+                drawChart(canvasId, title, unit, deviceId, fieldId, newRange, newAgg);
+            });
+        });
+    }
+
+    function renderAllCharts(unitId) {
+        if (unitId === KAMAR1_ID) {
+            drawChart('chart-kamar1-suhu', 'Suhu Udara', '°C', KAMAR1_ID, 'suhu');
+            drawChart('chart-kamar1-kelembapan', 'Kelembapan', '% RH', KAMAR1_ID, 'kelembapan');
+            drawChart('chart-kamar1-ppm', 'Kualitas Udara', 'PPM', KAMAR1_ID, 'ppm_udara');
+            drawChart('chart-kamar1-tegangan', 'Tegangan', 'V', KAMAR1_ID, 'tegangan');
+            drawChart('chart-kamar1-arus', 'Arus', 'A', KAMAR1_ID, 'arus');
+            drawChart('chart-kamar1-daya', 'Daya', 'W', KAMAR1_ID, 'daya');
+            drawChart('chart-kamar1-energi', 'Energi', 'kWh', KAMAR1_ID, 'energi');
+            drawChart('chart-kamar1-frekuensi', 'Frekuensi', 'Hz', KAMAR1_ID, 'frekuensi');
+            drawChart('chart-kamar1-pf', 'Power Factor', 'PF', KAMAR1_ID, 'pf');
+        } else if (unitId === 'villa_1' || unitId === 'villa_2') {
+            const deviceId = unitId;
+            drawChart(`chart-${unitId}-tegangan`, 'Tegangan', 'V', deviceId, 'tegangan');
+            drawChart(`chart-${unitId}-arus`, 'Arus', 'A', deviceId, 'arus');
+            drawChart(`chart-${unitId}-daya`, 'Daya', 'W', deviceId, 'daya');
+            drawChart(`chart-${unitId}-energi`, 'Energi', 'kWh', deviceId, 'energi');
+            drawChart(`chart-${unitId}-frekuensi`, 'Frekuensi', 'Hz', deviceId, 'frekuensi');
+            drawChart(`chart-${unitId}-pf`, 'Power Factor', 'PF', deviceId, 'pf');
+        }
+    }
+
     // --- LOGIKA EVENT LISTENERS UTAMA ---
     
+    const tambahKartuBtn = document.getElementById('tambah-kartu-baru-btn');
+    const modalBatalBtn = document.getElementById('modal-batal-btn');
+    const modalForm = document.getElementById('modal-form');
+
     navDashboard.addEventListener('click', () => { showSection('content-dashboard'); });
     navKartu.addEventListener('click', () => { showSection('content-kartu'); muatDataKartu(); });
 
@@ -439,37 +466,24 @@ if (window.location.pathname.includes("dashboard.html")) {
             const targetSectionId = card.dataset.target;
             showSection(targetSectionId); 
 
-        if (targetSectionId === 'detail-kamar1') { 
-            // Inisialisasi Kamar 1 (sudah memanggil setupChartListeners di dalamnya)
-            initializeKamar1Detail(); 
-        } 
-        else if (targetSectionId === 'detail-villa1') { 
-            // Panggil renderAllCharts, lalu pasang listener setelah 100ms
-            renderAllCharts('villa_1'); 
-            setTimeout(setupChartListeners, 100); 
-        } 
-        else if (targetSectionId === 'detail-villa2') { 
-            // Panggil renderAllCharts, lalu pasang listener setelah 100ms
-            renderAllCharts('villa_2');
-            setTimeout(setupChartListeners, 100);
-        }
+            if (targetSectionId === 'detail-kamar1') { initializeKamar1Detail(); } 
+            else if (targetSectionId === 'detail-villa1') { renderAllCharts('villa_1'); setTimeout(setupChartListeners, 100); } 
+            else if (targetSectionId === 'detail-villa2') { renderAllCharts('villa_2'); setTimeout(setupChartListeners, 100); }
         });
     });
 
     backButtons.forEach(button => { button.addEventListener('click', () => { showSection('content-dashboard'); }); });
 
-    // Event listener untuk tombol CRUD di Tabel
     kartuTableBody.addEventListener('click', (e) => {
         const uid = e.target.dataset.uid;
         if (e.target.classList.contains('button-edit')) { bukaModal('edit', { uid: uid, namaTamu: e.target.dataset.nama }); }
         if (e.target.classList.contains('button-delete')) { hapusNamaTamu(uid); }
         if (e.target.classList.contains('button-delete-permanent')) { hapusKartuPermanen(uid); }
     });
-
-    // Event listener modal
-    modalForm.addEventListener('submit', simpanDataModal);
-    modalBatalBtn.addEventListener('click', tutupModal);
+    
     tambahKartuBtn.addEventListener('click', () => bukaModal('tambah'));
+    modalBatalBtn.addEventListener('click', tutupModal);
+    modalForm.addEventListener('submit', simpanDataModal);
 
 
     showSection('content-dashboard'); // Tampilkan section dashboard utama saat halaman dimuat
