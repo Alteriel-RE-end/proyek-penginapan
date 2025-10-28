@@ -4,15 +4,13 @@ import mqtt from 'mqtt';
 // Ambil kredensial HiveMQ dari Environment Variables Vercel
 const mqttOptions = {
     // Kredensial yang kita atur di Vercel Settings
-    host: process.env.HIVEMQ_HOST,     // <-- BENAR: Mengakses variabel bernama HIVEMQ_HOST
+    host: process.env.HIVEMQ_HOST, 
     port: 8883,
     protocol: 'mqtts',
-    username: process.env.HIVEMQ_USER, // <-- BENAR: Mengakses variabel bernama HIVEMQ_USER
-    password: process.env.HIVEMQ_PASSWORD, // <-- BENAR: Mengakses variabel bernama HIVEMQ_PASSWORD
+    username: process.env.HIVEMQ_USER,
+    password: process.env.HIVEMQ_PASSWORD, 
     clientId: `vercel_control_${Math.random().toString(16).substr(2, 8)}`
 };
-
-// ... (sisa kode API tetap sama) ...
 
 // Topik tujuan (sesuai yang di-subscribe oleh ESP32)
 const RELAY_TOPIC = 'kamar_1/kontrol'; 
@@ -23,7 +21,7 @@ export default async function handler(request, response) {
     }
 
     try {
-        const { command } = request.body; // command = "RELAY1_ON", "RELAY3_OFF", dsb.
+        const { command } = request.body; 
 
         if (!command) {
             return response.status(400).json({ message: 'Perintah (command) diperlukan.' });
@@ -31,23 +29,34 @@ export default async function handler(request, response) {
 
         const client = mqtt.connect(mqttOptions);
         
+        let connected = false;
+
         // Bungkus MQTT di Promise agar Vercel tahu kapan harus selesai
         await new Promise((resolve, reject) => {
+            
+            // Timeout untuk mencegah fungsi menggantung selamanya
+            const timeout = setTimeout(() => {
+                client.end();
+                reject(new Error('MQTT Timeout: Koneksi ke broker terlalu lambat atau diblokir.'));
+            }, 5000); // Batas waktu 5 detik
+
             client.on('connect', () => {
-                client.publish(RELAY_TOPIC, command, { qos: 1 }, (error) => { // qos 1: Pastikan terkirim
-                    client.end(); // Tutup koneksi setelah publish
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve();
-                    }
+                connected = true;
+                client.publish(RELAY_TOPIC, command, { qos: 1 }, (error) => {
+                    clearTimeout(timeout);
+                    client.end();
+                    if (error) { reject(error); } else { resolve(); }
                 });
             });
 
+            // Tambahkan pengecekan error sebelum connect
             client.on('error', (err) => {
+                clearTimeout(timeout);
                 client.end();
-                reject(new Error(`MQTT Connection/Publish Error: ${err.message}`));
+                // Hanya reject jika belum pernah terhubung sebelumnya
+                if (!connected) { reject(new Error(`MQTT Connection Error: ${err.message}`)); }
             });
+
         });
 
         // Jika berhasil terpublish ke HiveMQ
@@ -56,6 +65,6 @@ export default async function handler(request, response) {
     } catch (error) {
         console.error('Error Kontrol Relay:', error.message);
         // Penting: Memberikan respon 500 dengan JSON agar frontend tahu errornya
-        return response.status(500).json({ message: 'Gagal mengirim perintah', error: error.message });
+        return response.status(500).json({ message: `Gagal mengirim perintah: ${error.message}`, error: error.message });
     }
 }

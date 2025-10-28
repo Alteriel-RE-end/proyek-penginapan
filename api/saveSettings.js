@@ -9,6 +9,13 @@ export default async function handler(request, response) {
         return response.status(405).json({ message: 'Method Not Allowed' });
     }
 
+    // --- Pengecekan Kritis: Pastikan DB Aktif ---
+    if (!db) {
+        console.error('ERROR: Database client not initialized. Check FIREBASE_ADMIN_SDK ENV.');
+        return response.status(500).json({ message: 'Internal Server Error: Database client not initialized.' });
+    }
+    // ------------------------------------------
+
     try {
         const { relayNames } = request.body; 
 

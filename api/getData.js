@@ -1,4 +1,4 @@
-// api/getData.js
+// api/getData.js (VERSI KOREKSI AKHIR UNTUK STABILITAS VERCEL)
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
 
 // Ambil kunci rahasia dari Vercel Environment Variables
@@ -7,15 +7,20 @@ const token = process.env.INFLUXDB_TOKEN;
 const org = process.env.INFLUXDB_ORG;
 const bucket = process.env.INFLUXDB_BUCKET;
 
-// Klien InfluxDB
-const influxDB = new InfluxDB({ url, token });
-const queryApi = influxDB.getQueryApi(org);
+// HAPUS INISIALISASI GLOBAL DI SINI (JANGAN DIULANG)
+// const influxDB = new InfluxDB({ url, token });
+// const queryApi = influxDB.getQueryApi(org);
 
 // Fungsi utama API Handler
 export default async function handler(request, response) {
     if (request.method !== 'GET') {
         return response.status(405).json({ message: 'Method Not Allowed' });
     }
+    
+    // --- INISIALISASI KLIEN DI DALAM HANDLER (FIX VERCEL) ---
+    const influxDB = new InfluxDB({ url, token });
+    const queryApi = influxDB.getQueryApi(org);
+    // --------------------------------------------------------
 
     try {
         // Ambil parameter: ?id=kamar_1&field=suhu&range=1h&agg=10s
@@ -94,6 +99,7 @@ export default async function handler(request, response) {
 
     } catch (error) {
         console.error('Gagal menjalankan kueri InfluxDB:', error);
+        // Error 500 akan dipicu di sini jika koneksi InfluxDB atau kueri gagal
         return response.status(500).json({ message: 'Internal Server Error: Gagal memuat data historis', error: error.message });
     }
 }
