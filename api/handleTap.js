@@ -1,5 +1,5 @@
 // api/handleTap.js (VERSI FINAL TERKOREKSI)
-import { db } from './firebaseAdmin'; 
+import { db } from './firebaseAdmin.js'; 
 import mqtt from 'mqtt'; 
 
 // Nama koleksi di Firestore
