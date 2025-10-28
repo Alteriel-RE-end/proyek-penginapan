@@ -1,5 +1,5 @@
 // =================================================================
-// == FILE: public/app.js (VERSI FINAL LENGKAP & TERKOREKSI)
+// == FILE: public/app.js (VERSI FINAL LENGKAP - DENGAN LIVE DATA MQTT)
 // =================================================================
 
 // =================================================================
@@ -103,6 +103,19 @@ function getAirQualityStatus(ppm) {
     if (ppm >= 4000) return { level: 'Danger', color: 'darkred', emoji: '🟤', desc: 'Kualitas udara sangat berbahaya. Harus segera ventilasi.' };
     return { level: 'N/A', color: 'gray', emoji: '⚫', desc: 'Data belum tersedia.' };
 }
+
+// FUNGSI UNTUK UPDATE KUALITAS UDARA SECARA VISUAL
+function renderAirQuality(ppmValue) {
+    const status = getAirQualityStatus(ppmValue);
+    const co2Live = document.getElementById('co2-live-status');
+    const co2LiveDesc = document.getElementById('co2-live-desc');
+    const co2LiveEmoji = document.getElementById('co2-live-emoji');
+
+    if (co2Live) { co2Live.textContent = `${ppmValue} PPM`; co2Live.style.backgroundColor = status.color; }
+    if (co2LiveDesc) { co2LiveDesc.textContent = status.desc; }
+    if (co2LiveEmoji) { co2LiveEmoji.textContent = status.emoji; }
+}
+
 
 function showSection(sectionId) {
     const allSections = document.querySelectorAll('main section'); 
@@ -222,6 +235,53 @@ if (window.location.pathname.includes("dashboard.html")) {
     let isEditMode = false;
     let relayNames = { 'RELAY1': 'Lampu Kamar Tidur', 'RELAY2': 'Lampu Kamar Mandi', 'RELAY3': 'Kipas', 'RELAY4': 'Lampu Teras' };
     let relayStates = { 'RELAY1': 'OFF', 'RELAY2': 'OFF', 'RELAY3': 'OFF', 'RELAY4': 'OFF' };
+    
+    // --- FUNGSI MQTT DAN LIVE DATA (BARU) ---
+    const dashboardClientId = 'web_admin_' + Math.random().toString(16).substr(2, 8);
+    const dashboardOptions = { clientId: dashboardClientId, username: MQTT_USER_PUBLIC, password: MQTT_PASS_PUBLIC };
+    let dashboardMqttClient;
+
+    function startDashboardMqtt() {
+        if (dashboardMqttClient) { dashboardMqttClient.end(); } 
+        dashboardMqttClient = mqtt.connect(MQTT_HOST_PUBLIC, dashboardOptions);
+
+        dashboardMqttClient.on('connect', () => {
+            console.log('Terhubung ke MQTT (Dashboard)!');
+            dashboardMqttClient.subscribe([KAMAR1_STATUS_TOPIC], { qos: 0 });
+        });
+
+        dashboardMqttClient.on('message', (topic, payload) => {
+            if (topic === KAMAR1_STATUS_TOPIC) {
+                try {
+                    const data = JSON.parse(payload.toString());
+                    updateLiveMetrics(data);
+                    // Update relay status here based on data 
+                } catch(e) { console.error('Gagal parse JSON live data:', e); }
+            }
+        });
+
+        dashboardMqttClient.on('error', (err) => console.error('Koneksi MQTT Error (Dashboard): ', err));
+    }
+    
+    function updateLiveMetrics(data) {
+        // Sensor Lingkungan
+        document.getElementById('live-suhu').textContent = `${data.suhu.toFixed(1)} °C`;
+        document.getElementById('live-kelembapan').textContent = `${data.kelembapan.toFixed(1)} % RH`;
+        renderAirQuality(data.ppm_udara); // Memanggil fungsi yang baru ditambahkan
+        
+        // Daya Listrik
+        document.getElementById('live-tegangan-status').textContent = `${data.tegangan.toFixed(1)} V`;
+        document.getElementById('live-arus-status').textContent = `${data.arus.toFixed(2)} A`;
+        document.getElementById('live-daya-status').textContent = `${data.daya.toFixed(1)} W`;
+        document.getElementById('live-energi-status').textContent = `${data.energi.toFixed(3)} kWh`;
+
+        // Update Relay State (untuk kontrol panel view consistency)
+        if (data.relay_status) {
+             relayStates = data.relay_status;
+             renderRelayControls(); // Rerender controls to show live status
+        }
+    }
+
 
     // --- FUNGSI KONTROL RELAY & PENGATURAN ---
 
@@ -250,8 +310,9 @@ if (window.location.pathname.includes("dashboard.html")) {
         try {
             const response = await fetch('/api/kontrolRelay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: command }) });
             if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.message || 'Gagal mengirim perintah ke server.'); }
-            relayStates[relayId] = newState;
-            renderRelayControls();
+            // Tidak perlu update relayStates di sini, biarkan MQTT yang mengupdate setelah perintah diterima ESP
+            // relayStates[relayId] = newState; 
+            // renderRelayControls();
         } catch (error) { alert(`Gagal Kontrol Relay: ${error.message}`); console.error('Kontrol Gagal:', error); }
     }
 
@@ -381,10 +442,11 @@ if (window.location.pathname.includes("dashboard.html")) {
     // --- FUNGSI INITIALIZE UTAMA ---
     
     async function initializeKamar1Detail() {
+        startDashboardMqtt(); // MENGAKTIFKAN LIVE DATA
         await loadRelayNames();
         renderRelayControls();
         renderRelaySettings();
-        renderAirQuality(1500); // Dummy PPM
+        // Live data air quality dan sensor lainnya akan diupdate oleh MQTT client secara otomatis
         renderAllCharts(KAMAR1_ID);
         setTimeout(setupChartListeners, 100); 
     }
@@ -401,9 +463,11 @@ if (window.location.pathname.includes("dashboard.html")) {
 
     function renderAllCharts(unitId) {
         if (unitId === KAMAR1_ID) {
+            // Sensor Lingkungan
             drawChart('chart-kamar1-suhu', 'Suhu Udara', '°C', KAMAR1_ID, 'suhu');
             drawChart('chart-kamar1-kelembapan', 'Kelembapan', '% RH', KAMAR1_ID, 'kelembapan');
             drawChart('chart-kamar1-ppm', 'Kualitas Udara', 'PPM', KAMAR1_ID, 'ppm_udara');
+            // Sensor Daya
             drawChart('chart-kamar1-tegangan', 'Tegangan', 'V', KAMAR1_ID, 'tegangan');
             drawChart('chart-kamar1-arus', 'Arus', 'A', KAMAR1_ID, 'arus');
             drawChart('chart-kamar1-daya', 'Daya', 'W', KAMAR1_ID, 'daya');
@@ -425,8 +489,15 @@ if (window.location.pathname.includes("dashboard.html")) {
     
     // Tombol Logout sudah didefinisikan di scope luar (Bagian 3)
 
-    navDashboard.addEventListener('click', () => { showSection('content-dashboard'); });
-    navKartu.addEventListener('click', () => { showSection('content-kartu'); muatDataKartu(); });
+    navDashboard.addEventListener('click', () => { 
+        showSection('content-dashboard'); 
+        if (dashboardMqttClient) dashboardMqttClient.end(); // Stop MQTT when leaving detail view
+    });
+    navKartu.addEventListener('click', () => { 
+        showSection('content-kartu'); 
+        muatDataKartu(); 
+        if (dashboardMqttClient) dashboardMqttClient.end(); // Stop MQTT when leaving detail view
+    });
 
     propertyCards.forEach(card => {
         card.addEventListener('click', () => {
@@ -439,7 +510,12 @@ if (window.location.pathname.includes("dashboard.html")) {
         });
     });
 
-    backButtons.forEach(button => { button.addEventListener('click', () => { showSection('content-dashboard'); }); });
+    backButtons.forEach(button => { 
+        button.addEventListener('click', () => { 
+            showSection('content-dashboard'); 
+            if (dashboardMqttClient) dashboardMqttClient.end(); // Stop MQTT when leaving detail view
+        }); 
+    });
 
     kartuTableBody.addEventListener('click', (e) => {
         const uid = e.target.dataset.uid;
@@ -460,6 +536,11 @@ if (window.location.pathname.includes("dashboard.html")) {
 // =================================================================
 // == BAGIAN 6: LOGIKA HALAMAN PUBLIK (INDEX.HTML)
 // =================================================================
+// ... (Logic for public index.html remains the same as previous step)
+// ... (Logic for public index.html remains the same as previous step)
+// ... (Logic for public index.html remains the same as previous step)
+// ... (Logic for public index.html remains the same as previous step)
+// ... (Logic for public index.html remains the same as previous step)
 
 if (window.location.pathname === "/" || window.location.pathname.includes("index.html")) {
     
