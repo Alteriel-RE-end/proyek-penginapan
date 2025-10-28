@@ -1,5 +1,5 @@
 // api/getSettings.js (Koreksi untuk mencegah crash)
-import { db } from './firebaseAdmin.js';
+import { db } from './firebaseAdmin';
 
 const SETTINGS_COLLECTION = 'pengaturan_unit';
 const KAMAR1_DOC_ID = 'kamar_1_settings'; // Digunakan untuk referensi di sini, meskipun ID datang dari query

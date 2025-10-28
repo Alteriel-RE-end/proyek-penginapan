@@ -1,5 +1,5 @@
 // api/kartu.js (VERSI FINAL TERKOREKSI)
-import { db } from './firebaseAdmin.js'; // PATH KOREKSI
+import { db } from './firebaseAdmin'; // PATH KOREKSI
 
 const COLLECTION_NAME = 'kartu_tamu';
 
